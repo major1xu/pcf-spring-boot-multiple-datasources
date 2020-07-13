@@ -16,7 +16,19 @@
 
 package com.marcosbarbero.wd.pcf.multidatasources.config;
 
+import com.marcosbarbero.wd.pcf.multidatasources.Application;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.cloud.Cloud;
+import org.springframework.cloud.CloudFactory;
 import org.springframework.cloud.config.java.AbstractCloudConfig;
+import org.springframework.cloud.config.java.ServiceScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -27,17 +39,35 @@ import javax.sql.DataSource;
  * @author Marcos Barbero
  */
 @Configuration
-public class CloudConfig extends AbstractCloudConfig {
+@ServiceScan
+public class CloudConfig //extends AbstractCloudConfig
+{
+    /* https://docs.cloudfoundry.org/buildpacks/java/configuring-service-connections/spring-service-bindings.html
+    @Autowired
+    @Qualifier("first-db-gcp") DataSource firstDataSource;
 
+    @Autowired
+    @Qualifier("second-db-gcp") DataSource secondDataSource;
+*/
+    private static final Logger logger = LoggerFactory.getLogger(Application.class);
     @Primary
     @Bean(name = "first-db")
     public DataSource firstDataSource() {
-        return connectionFactory().dataSource("first-db");
+        // https://docs.cloudfoundry.org/buildpacks/java/configuring-service-connections/spring-service-bindings.html
+        CloudFactory cloudFactory = new CloudFactory();
+        Cloud cloud = cloudFactory.getCloud();
+        DataSource firstDataSource = ((Cloud) cloud).getServiceConnector("first-db-gcp", DataSource.class, null);
+        logger.info(firstDataSource.toString());
+        return firstDataSource;
     }
 
     @Bean(name = "second-db")
     public DataSource secondDataSource() {
-        return connectionFactory().dataSource("second-db");
+        CloudFactory cloudFactory = new CloudFactory();
+        Cloud cloud = cloudFactory.getCloud();
+        DataSource secondDataSource = ((Cloud) cloud).getServiceConnector("second-db-gcp", DataSource.class, null);
+        logger.info(secondDataSource.toString());
+        return secondDataSource;
     }
 }
 
