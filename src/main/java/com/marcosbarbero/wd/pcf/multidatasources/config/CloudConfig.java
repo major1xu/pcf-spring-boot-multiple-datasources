@@ -39,16 +39,11 @@ import javax.sql.DataSource;
  * @author Marcos Barbero
  */
 @Configuration
-@ServiceScan
+@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class})
 public class CloudConfig //extends AbstractCloudConfig
 {
-    /* https://docs.cloudfoundry.org/buildpacks/java/configuring-service-connections/spring-service-bindings.html
-    @Autowired
-    @Qualifier("first-db-gcp") DataSource firstDataSource;
+    // https://docs.cloudfoundry.org/buildpacks/java/configuring-service-connections/spring-service-bindings.html
 
-    @Autowired
-    @Qualifier("second-db-gcp") DataSource secondDataSource;
-*/
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     @Primary
     @Bean(name = "first-db")
