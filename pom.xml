@@ -45,6 +45,7 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>-->
+        <!-- https://docs.cloudfoundry.org/buildpacks/java/configuring-service-connections/spring-service-bindings.html-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-spring-service-connector</artifactId>
@@ -61,6 +62,13 @@
             <version>1.2.3.RELEASE</version>
         </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>repository.springsource.milestone</id>
+            <name>SpringSource Milestone Repository</name>
+            <url>http://repo.springsource.org/milestone</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>

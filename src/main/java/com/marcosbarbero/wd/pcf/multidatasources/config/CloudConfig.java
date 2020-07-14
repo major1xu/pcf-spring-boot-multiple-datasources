@@ -39,8 +39,8 @@ import javax.sql.DataSource;
  * @author Marcos Barbero
  */
 @Configuration
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class})
-public class CloudConfig //extends AbstractCloudConfig
+//@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
+public class CloudConfig extends AbstractCloudConfig
 {
     // https://docs.cloudfoundry.org/buildpacks/java/configuring-service-connections/spring-service-bindings.html
 

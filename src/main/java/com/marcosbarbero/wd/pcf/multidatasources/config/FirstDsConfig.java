@@ -40,7 +40,7 @@ import static java.util.Collections.singletonMap;
  * @author Marcos Barbero
  */
 @Configuration
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class})
+//@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @EnableJpaRepositories(
         entityManagerFactoryRef = "firstEntityManagerFactory",
         transactionManagerRef = "firstTransactionManager",
