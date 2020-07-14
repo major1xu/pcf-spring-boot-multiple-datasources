@@ -39,7 +39,7 @@ import static java.util.Collections.singletonMap;
  * @author Marcos Barbero
  */
 @Configuration
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
+//@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @EnableJpaRepositories(
         entityManagerFactoryRef = "secondEntityManagerFactory",
         transactionManagerRef = "secondTransactionManager",
@@ -49,9 +49,9 @@ import static java.util.Collections.singletonMap;
 public class SecondDsConfig {
 
     @Bean(name = "secondEntityManagerFactory")
-    public LocalContainerEntityManagerFactoryBean secondEntityManagerFactory(final EntityManagerFactoryBuilder builder,
+    public LocalContainerEntityManagerFactoryBean secondEntityManagerFactory(final EntityManagerFactoryBuilder entityManagerFactoryBuilder,
                                                                              final @Qualifier("second-db") DataSource dataSource) {
-        return builder
+        return entityManagerFactoryBuilder
                 .dataSource(dataSource)
                 .packages("com.marcosbarbero.wd.pcf.multidatasources.second.domain")
                 .persistenceUnit("secondDb")

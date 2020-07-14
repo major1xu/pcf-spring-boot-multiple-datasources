@@ -19,9 +19,12 @@ package com.marcosbarbero.wd.pcf.multidatasources.first.repository;
 import com.marcosbarbero.wd.pcf.multidatasources.first.domain.First;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  * @author Marcos Barbero
  */
+// https://stackoverflow.com/questions/41170661/spring-data-jpa-consider-defining-a-bean-named-entitymanagerfactory-in-your/41178250
+//@Repository
 public interface FirstRepository extends JpaRepository<First, Long> {
 }

@@ -19,9 +19,11 @@ package com.marcosbarbero.wd.pcf.multidatasources.second.repository;
 import com.marcosbarbero.wd.pcf.multidatasources.second.domain.Second;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  * @author Marcos Barbero
  */
+//@Repository
 public interface SecondRepository extends JpaRepository<Second, Long> {
 }

@@ -16,6 +16,8 @@
 
 package com.marcosbarbero.wd.pcf.multidatasources.config;
 
+import com.marcosbarbero.wd.pcf.multidatasources.first.repository.FirstRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -26,6 +28,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -38,6 +41,10 @@ import static java.util.Collections.singletonMap;
 
 /**
  * @author Marcos Barbero
+ * Parameter 0 of method firstEntityManagerFactory in com.marcosbarbero.wd.pcf.multidatasources.config.FirstDsConfig required a bean of type 'org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder' that could not be found.
+ *    2020-07-14T15:47:27.92-0500 [APP/PROC/WEB/0] OUT Action:
+ *    2020-07-14T15:47:27.92-0500 [APP/PROC/WEB/0] OUT Consider defining a bean of type 'org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder' in your configuration.
+
  */
 @Configuration
 //@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
@@ -48,11 +55,26 @@ import static java.util.Collections.singletonMap;
 )
 @EnableTransactionManagement
 public class FirstDsConfig {
-
+/*
+    @Autowired
+    private org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder entityManagerFactoryBean;
+*/
     @Primary
     @Bean(name = "firstEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean firstEntityManagerFactory(final EntityManagerFactoryBuilder builder,
                                                                             final @Qualifier("first-db") DataSource dataSource) {
+/*
+
+https://stackoverflow.com/questions/44516942/consider-defining-a-bean-named-entitymanagerfactory-in-your-configuration-spri
+
+        LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+        entityManagerFactoryBean.setDataSource(dataSource);
+        entityManagerFactoryBean.setPackagesToScan("com.marcosbarbero.wd.pcf.multidatasources.first.domain");
+        //additional config of factory
+        entityManagerFactoryBean.setPersistenceUnitName("firstDb");
+        entityManagerFactoryBean.setJpaPropertyMap(singletonMap("hibernate.hbm2ddl.auto", "create-drop"));
+        return entityManagerFactoryBean;
+*/
         return builder
                 .dataSource(dataSource)
                 .packages("com.marcosbarbero.wd.pcf.multidatasources.first.domain")
@@ -61,7 +83,7 @@ public class FirstDsConfig {
                 .build();
     }
 
-    @Primary
+    @Primary // https://stackoverflow.com/questions/52401041/spring-boot-multiple-databse-no-qualifying-bean-of-type-entitymanagerfactorybu
     @Bean(name = "firstTransactionManager")
     public PlatformTransactionManager firstTransactionManager(@Qualifier("firstEntityManagerFactory")
                                                               EntityManagerFactory firstEntityManagerFactory) {
