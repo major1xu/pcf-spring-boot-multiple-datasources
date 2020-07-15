@@ -19,10 +19,6 @@ package com.marcosbarbero.wd.pcf.multidatasources.config;
 import com.marcosbarbero.wd.pcf.multidatasources.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.cloud.Cloud;
 import org.springframework.cloud.CloudFactory;
 import org.springframework.cloud.config.java.AbstractCloudConfig;
@@ -37,11 +33,21 @@ import javax.sql.DataSource;
  */
 @Configuration
 //@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
+
+// comment the line above, it will go to auto config, and it will say cannot find the db
+// Caused by: java.lang.IllegalArgumentException: A database name must be provided.
+//        2020-07-15T16:55:06.18-0500 [APP/PROC/WEB/0] OUT 	at org.springframework.util.Assert.hasText(Assert.java:284) ~[spring-core-5.2.5.RELEASE.jar:5.2.5.RELEASE]
+//        2020-07-15T16:55:06.18-0500 [APP/PROC/WEB/0] OUT 	at org.springframework.cloud.gcp.autoconfigure.sql.DefaultCloudSqlJdbcInfoProvider.<init>(DefaultCloudSqlJdbcInfoProvider.java:39) ~[spring-cloud-gcp-autoconfigure-1.2.3.RELEASE.jar:1.2.3.RELEASE]
+//        2020-07-15T16:55:06.18-0500 [APP/PROC/WEB/0] OUT 	at org.springframework.cloud.gcp.autoconfigure.sql.GcpCloudSqlAutoConfiguration$MySqlJdbcInfoProviderConfiguration.defaultMySqlJdbcInfoProvider(GcpCloudSqlAutoConfiguration.java:87) ~[spring-cloud-gcp-autoconfigure-1.2.3.RELEASE.jar:1.2.3.RELEASE]
+
+// uncomment the line above, it will go to jdbc connection, and it cannot connect due to user / password alone won't work because we enabled ssl, and we usually connect via gcp service broker
+
 public class CloudConfig extends AbstractCloudConfig
 {
-    /* https://docs.cloudfoundry.org/buildpacks/java/configuring-service-connections/spring-service-bindings.html
+    // https://docs.cloudfoundry.org/buildpacks/java/configuring-service-connections/spring-service-bindings.html
 
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
+
     @Primary
     @Bean(name = "first-db")
     public DataSource firstDataSource() {
@@ -61,7 +67,8 @@ public class CloudConfig extends AbstractCloudConfig
         logger.info(secondDataSource.toString());
         return secondDataSource;
     }
-     */
+
+/*
     @Primary
     @Bean(name = "first-db")
     public DataSource firstDataSource() {
@@ -72,5 +79,6 @@ public class CloudConfig extends AbstractCloudConfig
     public DataSource secondDataSource() {
         return connectionFactory().dataSource("second-db");
     }
+*/
 }
 

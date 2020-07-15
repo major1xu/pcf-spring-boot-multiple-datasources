@@ -16,28 +16,21 @@
 
 package com.marcosbarbero.wd.pcf.multidatasources.config;
 
-import com.marcosbarbero.wd.pcf.multidatasources.first.repository.FirstRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import static java.util.Collections.singletonMap;
+import java.util.Properties;
+
 
 /**
  * @author Marcos Barbero
@@ -47,7 +40,6 @@ import static java.util.Collections.singletonMap;
 
  */
 @Configuration
-//@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @EnableJpaRepositories(
         entityManagerFactoryRef = "firstEntityManagerFactory",
         transactionManagerRef = "firstTransactionManager",
@@ -55,32 +47,38 @@ import static java.util.Collections.singletonMap;
 )
 @EnableTransactionManagement
 public class FirstDsConfig {
-/*
-    @Autowired
-    private org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder entityManagerFactoryBean;
-*/
+
+    // https://stackoverflow.com/questions/48416927/spring-boot-required-a-bean-named-entitymanagerfactory-that-could-not-be-foun
+    // https://stackoverflow.com/questions/44516942/consider-defining-a-bean-named-entitymanagerfactory-in-your-configuration-spri
+
+    // https://stackoverflow.com/questions/32285613/java-lang-illegalargumentexception-no-persistenceprovider-specified-in-entityma
     @Primary
     @Bean(name = "firstEntityManagerFactory")
-    public LocalContainerEntityManagerFactoryBean firstEntityManagerFactory(final EntityManagerFactoryBuilder builder,
-                                                                            final @Qualifier("first-db") DataSource dataSource) {
-/*
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
+            final @Qualifier("first-db") DataSource dataSource) {
+        LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
+        emf.setDataSource(dataSource);
+        emf.setPackagesToScan("com.marcosbarbero.wd.pcf.multidatasources.first.domain");
+        // https://stackoverflow.com/questions/36190331/hibernateexception-access-to-dialectresolutioninfo-cannot-be-null-when-hiberna
+        //emf.afterPropertiesSet();
+        emf.setJpaProperties(additionalProperties());
 
-https://stackoverflow.com/questions/44516942/consider-defining-a-bean-named-entitymanagerfactory-in-your-configuration-spri
+        // https://stackoverflow.com/questions/52326477/no-persistenceprovider-specified-in-entitymanagerfactory-and-chosen-persistence
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setDatabasePlatform("org.hibernate.dialect.MySQL8Dialect");
+        emf.setJpaVendorAdapter(vendorAdapter);
 
-        LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-        entityManagerFactoryBean.setDataSource(dataSource);
-        entityManagerFactoryBean.setPackagesToScan("com.marcosbarbero.wd.pcf.multidatasources.first.domain");
-        //additional config of factory
-        entityManagerFactoryBean.setPersistenceUnitName("firstDb");
-        entityManagerFactoryBean.setJpaPropertyMap(singletonMap("hibernate.hbm2ddl.auto", "create-drop"));
-        return entityManagerFactoryBean;
-*/
-        return builder
-                .dataSource(dataSource)
-                .packages("com.marcosbarbero.wd.pcf.multidatasources.first.domain")
-                .persistenceUnit("firstDb")
-                .properties(singletonMap("hibernate.hbm2ddl.auto", "create-drop"))
-                .build();
+        emf.setPersistenceUnitName("firstDB");
+        //emf.setJpaPropertyMap(singletonMap("hibernate.hbm2ddl.auto", "create-drop"));
+        return emf;
+    }
+
+    Properties additionalProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
+        properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+
+        return properties;
     }
 
     @Primary // https://stackoverflow.com/questions/52401041/spring-boot-multiple-databse-no-qualifying-bean-of-type-entitymanagerfactorybu
@@ -89,4 +87,6 @@ https://stackoverflow.com/questions/44516942/consider-defining-a-bean-named-enti
                                                               EntityManagerFactory firstEntityManagerFactory) {
         return new JpaTransactionManager(firstEntityManagerFactory);
     }
+
+
 }

@@ -1,7 +1,20 @@
-spring.jpa:
-  show-sql: true
-  generate-ddl: false
+spring:
+  jpa:
+    show-sql: true
+    generate-ddl: false
 
-#spring:
-#  main:
-#    allow-bean-definition-overriding: true
+  cloud:
+    gcp:
+      sql:
+        enabled: true
+
+  properties:
+    hibernate:
+      dialect: org.hibernate.dialect.MySQL8Dialect
+
+  datasource:
+    testWhileIdle: true
+#    validationQuery: SELECT 1
+    initialization-mode: always
+
+# spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
